@@ -15,6 +15,6 @@ void Cell::SetActive(bool active)
 
 void Cell::SetGridPosition(int row, int col)
 {
-    bn::fixed_point position = {col * 8, row * 8};
+    bn::fixed_point position = {col * CELL_SIZE, row * CELL_SIZE};
     mSprite.set_top_left_position(position);
 }

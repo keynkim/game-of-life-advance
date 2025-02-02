@@ -8,5 +8,9 @@ public:
     void SetActive(bool active);
     void SetGridPosition(int row, int col);
 private:
+    enum
+    {
+        CELL_SIZE = 8,
+    };
     bn::sprite_ptr mSprite;
 };
