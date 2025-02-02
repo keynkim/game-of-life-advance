@@ -1,8 +1,11 @@
 #include "Simulation.h"
 #include "bn_random.h"
+#include "bn_sprite_text_generator.h"
+#include "common_variable_8x8_sprite_font.h"
 
 Simulation::Simulation()
     : mCellIndex(0)
+    , mTextGenerator(common::variable_8x8_sprite_font)
 {
     mNeighbourOffsets.push_back({ -1, 0 });	// Directly above
     mNeighbourOffsets.push_back({ 1, 0 });	// Directly below
@@ -12,6 +15,14 @@ Simulation::Simulation()
     mNeighbourOffsets.push_back({ -1, 1 });	// Diagonal upper right
     mNeighbourOffsets.push_back({ 1, -1 });	// Diagonal lower left
     mNeighbourOffsets.push_back({ 1, 1 });	// Diagonal lower right
+
+    mTextGenerator.set_right_alignment();
+}
+
+void Simulation::updateText(const char* text)
+{
+    mTextSprites.clear();
+    mTextGenerator.generate(118, 74, text, mTextSprites);
 }
 
 void Simulation::Update()
@@ -22,18 +33,18 @@ void Simulation::Update()
         for (size_t col = 0; col < COL_COUNT; ++col)
         {
             int liveNeighbours = countLiveNeighbours(row, col);
-            bool cellState = GetState(row, col);
+            bool cellState = getState(row, col);
 
             if (cellState)
             {
                 // Rule 1 & 2 & 3
                 if (liveNeighbours > 3 || liveNeighbours < 2)
                 {
-                    SetState(row, col, false);
+                    setState(row, col, false);
                 }
                 else
                 {
-                    SetState(row, col, true);
+                    setState(row, col, true);
                 }
             }
             else
@@ -41,11 +52,11 @@ void Simulation::Update()
                 // Rule 4
                 if (liveNeighbours == 3)
                 {
-                    SetState(row, col, true);
+                    setState(row, col, true);
                 }
                 else
                 {
-                    SetState(row, col, false);
+                    setState(row, col, false);
                 }
             }
         }
@@ -56,9 +67,10 @@ void Simulation::Update()
 
 void Simulation::Draw()
 {
+    mCellIndex = 0;
     for (size_t i = 0; i < CELL_COUNT; ++i)
     {
-        mCells[mCellIndex].SetActive(false);
+        mCells[i].SetActive(false);
     }
 
     for (size_t row = 0; row < ROW_COUNT; ++row)
@@ -73,9 +85,24 @@ void Simulation::Draw()
                     mCells[mCellIndex].SetActive(true);
                     mCellIndex++;
                 }
+
+                if(mCellIndex == CELL_COUNT)
+                {
+                    updateText("OVERFLOW");
+                }
+                else
+                {
+                    updateText("");
+                }
             }
         }
     }
+}
+
+void Simulation::Reset()
+{
+    clear();
+    FillRandom();
 }
 
 void Simulation::FillRandom()
@@ -91,7 +118,7 @@ void Simulation::FillRandom()
     }
 }
 
-void Simulation::Clear()
+void Simulation::clear()
 {
     for (size_t row = 0; row < ROW_COUNT; ++row)
     {
@@ -102,20 +129,20 @@ void Simulation::Clear()
     }
 }
 
-void Simulation::SetState(int row, int col, bool state)
+void Simulation::setState(int row, int col, bool state)
 {
-    if (IsWithinBound(row, col))
+    if (isWithinBound(row, col))
     {
         mTempGrid[row][col] = state;
     }
 }
 
-bool Simulation::GetState(int row, int col) const
+bool Simulation::getState(int row, int col) const
 {
     return mGrid[row][col];
 }
 
-bool Simulation::IsWithinBound(int row, int col) const
+bool Simulation::isWithinBound(int row, int col) const
 {
 
     if (row >= 0 && row < ROW_COUNT && col >= 0 && col < COL_COUNT)
@@ -137,7 +164,7 @@ int Simulation::countLiveNeighbours(int row, int col)
         // Toroidal Grid
         int neighbourRow = (row + offset.row + ROW_COUNT) % ROW_COUNT;
         int neighbourColumn = (col + offset.col + COL_COUNT) % COL_COUNT;
-        liveNeighbours += GetState(neighbourRow, neighbourColumn) == true? 1 : 0;
+        liveNeighbours += getState(neighbourRow, neighbourColumn) == true? 1 : 0;
     }
 
     return liveNeighbours;

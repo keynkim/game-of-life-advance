@@ -12,17 +12,23 @@ int main()
     core::set_skip_frames(2);
     const color BG_COLOR = color(5, 5, 5);
     bg_palettes::set_transparent_color(BG_COLOR);
+
     Simulation simulation;
-    simulation.FillRandom();
+
     while(true)
     {
         bn::core::update();
 
-        // TODO: Fix drawing
-        if(bn::keypad::pressed(bn::keypad::key_type::A))
+        // Event Handling
+        if(bn::keypad::pressed(bn::keypad::key_type::START))
         {
-            simulation.FillRandom();
+           simulation.Reset();
         }
+
+        // Updating
+        simulation.Update();
+
+        // Drawing
         simulation.Draw();
     }
 }
