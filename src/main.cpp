@@ -1,14 +1,17 @@
 #include "bn_core.h"
 #include "bn_bg_palettes.h"
-#include "bn_regular_bg_ptr.h"
 #include "bn_sprite_ptr.h"
 #include "bn_sprite_items_cell.h"
+#include "Grid.h"
+
+using namespace bn;
 
 int main()
 {
-    bn::core::init();
-    bn::bg_palettes::set_transparent_color(bn::color(5, 5, 5));
-    bn::sprite_ptr sprite = bn::sprite_items::cell.create_sprite(-116, -76);
+    const color BG_COLOR = color(5, 5, 5);
+    core::init();
+    bg_palettes::set_transparent_color(BG_COLOR);
+    Grid grid;
     while(true)
     {
         bn::core::update();
