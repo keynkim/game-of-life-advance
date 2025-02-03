@@ -3,6 +3,7 @@
 #include "bn_color.h"
 #include "bn_bg_palettes.h"
 #include "Simulation.h"
+#include "ePattern.h"
 
 using namespace bn;
 
@@ -20,9 +21,37 @@ int main()
         bn::core::update();
 
         // Event Handling
-        if(bn::keypad::pressed(bn::keypad::key_type::START))
+        if(bn::keypad::pressed(bn::keypad::key_type::A))
         {
-           simulation.Reset();
+            simulation.Start();
+        }
+        if(bn::keypad::pressed(bn::keypad::key_type::B))
+        {
+            simulation.Stop();
+        }
+        if(bn::keypad::pressed(bn::keypad::key_type::UP))
+        {
+            simulation.Stop();
+            simulation.Reset();
+            simulation.Fill(ePatternType::BlinkerFuse);
+        }
+        if(bn::keypad::pressed(bn::keypad::key_type::DOWN))
+        {
+            simulation.Stop();
+            simulation.Reset();
+            simulation.FillRandom();
+        }
+        if(bn::keypad::pressed(bn::keypad::key_type::RIGHT))
+        {
+            simulation.Stop();
+            simulation.Reset();
+            simulation.Fill(ePatternType::Pentadecathlon);
+        }
+        if(bn::keypad::pressed(bn::keypad::key_type::LEFT))
+        {
+            simulation.Stop();
+            simulation.Reset();
+            simulation.Fill(ePatternType::Dart);
         }
 
         // Updating

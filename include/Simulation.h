@@ -3,6 +3,8 @@
 #include "bn_sprite_text_generator.h"
 #include "bn_vector.h"
 #include "Pair.h"
+#include "ePattern.h"
+#include "Patterns.h"
 
 using namespace bn;
 
@@ -12,8 +14,12 @@ public:
     Simulation();
     void Update();
     void Draw();
-    void FillRandom();
     void Reset();
+    void FillRandom();
+    void Fill(ePatternType patternType);
+    inline bool IsRunning() const;
+    inline void Start();
+    inline void Stop();
 
 private:
     enum
@@ -29,8 +35,11 @@ private:
     bool mTempGrid[ROW_COUNT][COL_COUNT];
     size_t mCellIndex;
     Cell mCells[CELL_COUNT];
-    bn::sprite_text_generator mTextGenerator;
-    bn::vector<bn::sprite_ptr, TEXT_COUNT> mTextSprites;
+    bool mbRunning;
+
+    sprite_text_generator mTextGenerator;
+    vector<bn::sprite_ptr, TEXT_COUNT> mTextSprites;
+    Patterns mPatterns;
 
     void clear();
     void updateText(const char* text);
@@ -39,4 +48,20 @@ private:
     bool isWithinBound(int row, int col) const;
     int countLiveNeighbours(int row, int col);
     void updateGrid();
+
 };
+
+inline bool Simulation::IsRunning() const
+{
+    return mbRunning;
+}
+
+inline void Simulation::Start()
+{
+    mbRunning = true;
+}
+
+inline void Simulation::Stop()
+{
+    mbRunning = false;
+}

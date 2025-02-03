@@ -6,6 +6,7 @@
 Simulation::Simulation()
     : mCellIndex(0)
     , mTextGenerator(common::variable_8x8_sprite_font)
+    , mbRunning(false)
 {
     mNeighbourOffsets.push_back({ -1, 0 });	// Directly above
     mNeighbourOffsets.push_back({ 1, 0 });	// Directly below
@@ -27,6 +28,10 @@ void Simulation::updateText(const char* text)
 
 void Simulation::Update()
 {
+    if (mbRunning == false)
+    {
+        return;
+    }
     // Update Temp Grid
     for (size_t row = 0; row < ROW_COUNT; ++row)
     {
@@ -102,7 +107,6 @@ void Simulation::Draw()
 void Simulation::Reset()
 {
     clear();
-    FillRandom();
 }
 
 void Simulation::FillRandom()
@@ -115,6 +119,33 @@ void Simulation::FillRandom()
             bool isCellLive = random.get_unbiased_int(6) == 0;
             mGrid[row][col] = isCellLive;
         }
+    }
+}
+void Simulation::Fill(ePatternType patternType)
+{
+    vector<Pair, 40> pattern;
+    switch(patternType)
+    {
+    case ePatternType::BlinkerFuse:
+        pattern = mPatterns.GetPatternWithOffest(patternType, 2, 7);
+        break;
+    case ePatternType::NoahsArk:
+        pattern = mPatterns.GetPatternWithOffest(patternType, 7, 3);
+        break;
+    case ePatternType::Pentadecathlon:
+        pattern = mPatterns.GetPatternWithOffest(patternType, 14, 5);
+        break;
+    case ePatternType::Dart:
+        pattern = mPatterns.GetPatternWithOffest(patternType, 2, 2);
+        break;
+    default:
+        break;
+    }
+
+    for(int i = 0; i < pattern.size(); ++i)
+    {
+        // Data entry mistake.. :'(
+        mGrid[pattern[i].col][pattern[i].row] = true;
     }
 }
 
