@@ -3,7 +3,7 @@
 #include "bn_sprite_text_generator.h"
 #include "bn_vector.h"
 #include "Pair.h"
-#include "ePattern.h"
+#include "ePatternType.h"
 #include "Patterns.h"
 
 using namespace bn;
@@ -14,10 +14,8 @@ public:
     Simulation();
     void Update();
     void Draw();
-    void Reset();
-    void FillRandom();
+    void Clear();
     void Fill(ePatternType patternType);
-    inline bool IsRunning() const;
     inline void Start();
     inline void Stop();
 
@@ -27,34 +25,29 @@ private:
         ROW_COUNT = 20,
         COL_COUNT = 30,
         CELL_COUNT = 120,
-        OFFSET_COUNT = 8,
-        TEXT_COUNT = 32
+        SEED_COUNT = 10,
+        TEXT_COUNT = 32,
     };
+    sprite_text_generator mTextGenerator;
     vector<Pair, 8> mNeighbourOffsets;
+
+    bool mbRunning;
     bool mGrid[ROW_COUNT][COL_COUNT];
     bool mTempGrid[ROW_COUNT][COL_COUNT];
-    size_t mCellIndex;
     Cell mCells[CELL_COUNT];
-    bool mbRunning;
-
-    sprite_text_generator mTextGenerator;
+    size_t mCellIndex;
+    vector<unsigned int, SEED_COUNT> mRandomSeeds;
     vector<bn::sprite_ptr, TEXT_COUNT> mTextSprites;
     Patterns mPatterns;
 
-    void clear();
     void updateText(const char* text);
+    void updateGrid();
     void setState(int row, int col, bool state);
     bool getState(int row, int col) const;
     bool isWithinBound(int row, int col) const;
     int countLiveNeighbours(int row, int col);
-    void updateGrid();
-
+    void fillRandom();
 };
-
-inline bool Simulation::IsRunning() const
-{
-    return mbRunning;
-}
 
 inline void Simulation::Start()
 {

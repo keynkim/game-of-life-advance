@@ -2,8 +2,9 @@
 
 enum class ePatternType
 {
+    Random,
     BlinkerFuse,
-    NoahsArk,
     Pentadecathlon,
     Dart,
+    MAX
 };

@@ -1,5 +1,6 @@
 #include "Simulation.h"
-#include "bn_random.h"
+#include "bn_time.h"
+#include "bn_seed_random.h"
 #include "bn_sprite_text_generator.h"
 #include "common_variable_8x8_sprite_font.h"
 
@@ -8,6 +9,8 @@ Simulation::Simulation()
     , mTextGenerator(common::variable_8x8_sprite_font)
     , mbRunning(false)
 {
+    mTextGenerator.set_right_alignment();
+
     mNeighbourOffsets.push_back({ -1, 0 });	// Directly above
     mNeighbourOffsets.push_back({ 1, 0 });	// Directly below
     mNeighbourOffsets.push_back({ 0, -1 });	// To the left
@@ -17,7 +20,15 @@ Simulation::Simulation()
     mNeighbourOffsets.push_back({ 1, -1 });	// Diagonal lower left
     mNeighbourOffsets.push_back({ 1, 1 });	// Diagonal lower right
 
-    mTextGenerator.set_right_alignment();
+    mRandomSeeds.push_back(21312421);
+    mRandomSeeds.push_back(86375927);
+    mRandomSeeds.push_back(22133678);
+    mRandomSeeds.push_back(26321754);
+    mRandomSeeds.push_back(40082645);
+    mRandomSeeds.push_back(94212078);
+    mRandomSeeds.push_back(85922364);
+    mRandomSeeds.push_back(41908183);
+    mRandomSeeds.push_back(59093239);
 }
 
 void Simulation::updateText(const char* text)
@@ -104,19 +115,43 @@ void Simulation::Draw()
     }
 }
 
-void Simulation::Reset()
+void Simulation::Clear()
 {
-    clear();
-}
-
-void Simulation::FillRandom()
-{
-    bn::random random;
     for (size_t row = 0; row < ROW_COUNT; ++row)
     {
         for (size_t col = 0; col < COL_COUNT; ++col)
         {
-            bool isCellLive = random.get_unbiased_int(6) == 0;
+            mGrid[row][col] = false;
+        }
+    }
+}
+
+void Simulation::fillRandom()
+{
+    static int seedIndex = 0;
+    if(seedIndex == mRandomSeeds.size())
+    {
+        seedIndex = 0;
+    }
+
+    unsigned int randomSeed = 0;
+    if (time::active())
+    {
+        optional<bn::time> time = bn::time::current();
+        randomSeed = 10000 * time->hour() + 100 * time->minute() + time->second();
+    }
+    else
+    {
+        randomSeed = mRandomSeeds[seedIndex];
+        seedIndex++;
+    }
+    seed_random seedRandom(randomSeed);
+
+    for (size_t row = 0; row < ROW_COUNT; ++row)
+    {
+        for (size_t col = 0; col < COL_COUNT; ++col)
+        {
+            bool isCellLive = seedRandom.get_unbiased_int(6) == 0;
             mGrid[row][col] = isCellLive;
         }
     }
@@ -126,14 +161,15 @@ void Simulation::Fill(ePatternType patternType)
     vector<Pair, 40> pattern;
     switch(patternType)
     {
-    case ePatternType::BlinkerFuse:
-        pattern = mPatterns.GetPatternWithOffest(patternType, 2, 7);
+    case ePatternType::Random:
+        fillRandom();
+        return;
         break;
-    case ePatternType::NoahsArk:
-        pattern = mPatterns.GetPatternWithOffest(patternType, 7, 3);
+    case ePatternType::BlinkerFuse:
+        pattern = mPatterns.GetPatternWithOffest(patternType, 7, 2);
         break;
     case ePatternType::Pentadecathlon:
-        pattern = mPatterns.GetPatternWithOffest(patternType, 14, 5);
+        pattern = mPatterns.GetPatternWithOffest(patternType, 5, 14);
         break;
     case ePatternType::Dart:
         pattern = mPatterns.GetPatternWithOffest(patternType, 2, 2);
@@ -144,19 +180,7 @@ void Simulation::Fill(ePatternType patternType)
 
     for(int i = 0; i < pattern.size(); ++i)
     {
-        // Data entry mistake.. :'(
-        mGrid[pattern[i].col][pattern[i].row] = true;
-    }
-}
-
-void Simulation::clear()
-{
-    for (size_t row = 0; row < ROW_COUNT; ++row)
-    {
-        for (size_t col = 0; col < COL_COUNT; ++col)
-        {
-            mGrid[row][col] = false;
-        }
+        mGrid[pattern[i].First][pattern[i].Second] = true;
     }
 }
 
@@ -193,8 +217,8 @@ int Simulation::countLiveNeighbours(int row, int col)
     for (const auto& offset : mNeighbourOffsets)
     {
         // Toroidal Grid
-        int neighbourRow = (row + offset.row + ROW_COUNT) % ROW_COUNT;
-        int neighbourColumn = (col + offset.col + COL_COUNT) % COL_COUNT;
+        int neighbourRow = (row + offset.First + ROW_COUNT) % ROW_COUNT;
+        int neighbourColumn = (col + offset.Second + COL_COUNT) % COL_COUNT;
         liveNeighbours += getState(neighbourRow, neighbourColumn) == true? 1 : 0;
     }
 
