@@ -22,20 +22,20 @@ public:
 private:
     enum
     {
-        ROW_COUNT = 20,
-        COL_COUNT = 30,
-        CELL_COUNT = 120,
+        OFFSET_COUNT = 8,
+        ROW_COUNT = 18,
+        COL_COUNT = 28,
+        CELL_COUNT = 124,
         SEED_COUNT = 10,
         TEXT_COUNT = 32,
     };
     sprite_text_generator mTextGenerator;
-    vector<Pair, 8> mNeighbourOffsets;
+    vector<Pair, OFFSET_COUNT> mNeighbourOffsets;
 
     bool mbRunning;
     bool mGrid[ROW_COUNT][COL_COUNT];
     bool mTempGrid[ROW_COUNT][COL_COUNT];
     Cell mCells[CELL_COUNT];
-    size_t mCellIndex;
     vector<unsigned int, SEED_COUNT> mRandomSeeds;
     vector<bn::sprite_ptr, TEXT_COUNT> mTextSprites;
     Patterns mPatterns;

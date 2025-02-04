@@ -5,8 +5,7 @@
 #include "common_variable_8x8_sprite_font.h"
 
 Simulation::Simulation()
-    : mCellIndex(0)
-    , mTextGenerator(common::variable_8x8_sprite_font)
+    : mTextGenerator(common::variable_8x8_sprite_font)
     , mbRunning(false)
 {
     mTextGenerator.set_right_alignment();
@@ -83,7 +82,7 @@ void Simulation::Update()
 
 void Simulation::Draw()
 {
-    mCellIndex = 0;
+    size_t cellIndex = 0;
     for (size_t i = 0; i < CELL_COUNT; ++i)
     {
         mCells[i].SetActive(false);
@@ -95,14 +94,14 @@ void Simulation::Draw()
         {
             if(mGrid[row][col] == true)
             {
-                if (mCellIndex < CELL_COUNT)
+                if (cellIndex < CELL_COUNT)
                 {
-                    mCells[mCellIndex].SetGridPosition(row, col);
-                    mCells[mCellIndex].SetActive(true);
-                    mCellIndex++;
+                    mCells[cellIndex].SetGridPosition(row, col);
+                    mCells[cellIndex].SetActive(true);
+                    cellIndex++;
                 }
 
-                if(mCellIndex == CELL_COUNT)
+                if(cellIndex == CELL_COUNT)
                 {
                     updateText("OVERFLOW");
                 }
@@ -129,22 +128,23 @@ void Simulation::Clear()
 void Simulation::fillRandom()
 {
     static int seedIndex = 0;
+
     if(seedIndex == mRandomSeeds.size())
     {
         seedIndex = 0;
     }
 
-    unsigned int randomSeed = 0;
+    unsigned int randomSeed = mRandomSeeds[seedIndex];
+    seedIndex++;
+
     if (time::active())
     {
         optional<bn::time> time = bn::time::current();
-        randomSeed = 10000 * time->hour() + 100 * time->minute() + time->second();
+        randomSeed += 10000 * time->second();
+        randomSeed += 100 * time->minute();
+        randomSeed += time->hour();
     }
-    else
-    {
-        randomSeed = mRandomSeeds[seedIndex];
-        seedIndex++;
-    }
+
     seed_random seedRandom(randomSeed);
 
     for (size_t row = 0; row < ROW_COUNT; ++row)
@@ -166,13 +166,13 @@ void Simulation::Fill(ePatternType patternType)
         return;
         break;
     case ePatternType::BlinkerFuse:
-        pattern = mPatterns.GetPatternWithOffest(patternType, 7, 2);
+        pattern = mPatterns.GetPatternWithOffest(patternType, 7, 1);
         break;
     case ePatternType::Pentadecathlon:
-        pattern = mPatterns.GetPatternWithOffest(patternType, 5, 14);
+        pattern = mPatterns.GetPatternWithOffest(patternType, 4, 13);
         break;
     case ePatternType::Dart:
-        pattern = mPatterns.GetPatternWithOffest(patternType, 2, 2);
+        pattern = mPatterns.GetPatternWithOffest(patternType, 2, 1);
         break;
     default:
         break;

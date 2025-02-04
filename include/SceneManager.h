@@ -3,6 +3,7 @@
 #include "bn_keypad.h"
 #include "bn_regular_bg_ptr.h"
 #include "bn_regular_bg_items_title.h"
+#include "bn_regular_bg_items_boundary.h"
 #include "bn_sprite_ptr.h"
 #include "bn_sprite_tiles_ptr.h"
 #include "bn_sprite_text_generator.h"
@@ -17,21 +18,21 @@ using namespace bn;
 class SceneManager
 {
 public:
-    static void LoadAttract();
-    static void LoadSimulation();
+    static void LoadAttractLoop();
+    static void LoadSimulationLoop();
 private:
     static ePatternType sPatternType;
 };
 
 ePatternType SceneManager::sPatternType = ePatternType::Random;
 
-void SceneManager::LoadAttract()
+void SceneManager::LoadAttractLoop()
 {
     int offset = 12;
-    int initialPositionY = 30;
-    int initialPositionX = 54;
+    int initialPositionX = 56;
+    int initialPositionY = 24;
 
-    regular_bg_ptr title = regular_bg_items::title.create_bg(0, -offset);
+    regular_bg_ptr title = regular_bg_items::title.create_bg(0, 0);
     sprite_text_generator textGenerator(common::variable_8x8_sprite_font);
     textGenerator.set_center_alignment();
 
@@ -99,8 +100,9 @@ void SceneManager::LoadAttract()
     sPatternType = static_cast<ePatternType>(selectionIndex);
 }
 
-void SceneManager::LoadSimulation()
+void SceneManager::LoadSimulationLoop()
 {
+    regular_bg_ptr boundary = regular_bg_items::boundary.create_bg(0, 0);
     Simulation simulation;
     simulation.Clear();
     simulation.Fill(sPatternType);

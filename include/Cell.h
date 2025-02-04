@@ -11,6 +11,7 @@ private:
     enum
     {
         CELL_SIZE = 8,
+        PIXEL_OFFSET = 8
     };
     bn::sprite_ptr mSprite;
 };

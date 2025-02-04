@@ -13,9 +13,9 @@ int main()
 
     while(true)
     {
-        SceneManager::LoadAttract();
+        SceneManager::LoadAttractLoop();
 
-        SceneManager::LoadSimulation();
+        SceneManager::LoadSimulationLoop();
 
         bn::core::update();
     }
