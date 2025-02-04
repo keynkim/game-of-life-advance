@@ -22,4 +22,4 @@ You can play it on actual Game Boy Advance hardware or through emulation.
 
 ## Resource
 - Engine: [Butano](https://github.com/GValiente/butano)
-- Itch.io: [Game Of Life Advance] (https://keynkim.itch.io/game-of-life-advance)
+- Itch.io: [Game Of Life Advance](https://keynkim.itch.io/game-of-life-advance)
