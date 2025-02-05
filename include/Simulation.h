@@ -12,6 +12,7 @@ class Simulation
 {
 public:
     Simulation();
+    ~Simulation() = default;
     void Update();
     void Draw();
     void Clear();

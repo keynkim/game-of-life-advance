@@ -5,6 +5,7 @@ class Cell
 {
 public:
     Cell();
+    ~Cell() = default;
     void SetActive(bool active);
     void SetGridPosition(int row, int col);
 private:

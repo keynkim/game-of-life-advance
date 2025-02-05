@@ -7,6 +7,7 @@ class Patterns
 {
 public:
     Patterns();
+    virtual ~Patterns() = default;
     bn::vector<Pair, 40> GetPatternWithOffest(ePatternType patternType, int offsetRow, int offsetCol);
 private:
     enum { PATTERN_COUNT = 40 };
